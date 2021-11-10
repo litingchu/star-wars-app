@@ -1,25 +1,41 @@
-import logo from './logo.svg';
+import * as React from 'react';
+import axios from 'axios';
 import './App.css';
+import { sortedByName } from './utils';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import PlanetChart from './components/PlanetChart';
+
+const App = () => {
+  const [data, setData] = React.useState([]);
+  React.useEffect(async () => {
+    const planets = await getData();
+    const sortedPlanets = sortedByName(planets);
+    setData(sortedPlanets);
+  }, []);
+
+  const getData = async () => {
+    let url = 'https://swapi.dev/api/planets/';
+    let count = 0;
+    let totalCount = 0;
+    let planetData = [];
+    do {
+      await axios(url)
+        .then((response) => {
+          totalCount = response.data.count;
+          count = count + response.data.results.length;
+          url = response.data.next;
+          const newPlanets = response.data.results;
+          planetData = [...planetData, ...newPlanets];
+        })
+        .catch((error) => {
+          console.error('Error fetching data: ', error);
+        });
+    } while (count < totalCount);
+    return planetData;
+  };
+
+  console.log({ data });
+  return <PlanetChart sortedPlanets={data} />;
+};
 
 export default App;
