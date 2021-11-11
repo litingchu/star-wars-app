@@ -4,6 +4,7 @@ import './App.css';
 import { sortedByName } from './utils';
 
 import PlanetChart from './components/PlanetChart';
+import PlanetTable from './components/PlanetTable';
 
 const App = () => {
   const [data, setData] = React.useState([]);
@@ -34,8 +35,12 @@ const App = () => {
     return planetData;
   };
 
-  console.log({ data });
-  return <PlanetChart sortedPlanets={data} />;
+  return (
+    <div>
+      <PlanetChart sortedPlanets={data} />
+      <PlanetTable sortedPlanets={data} />
+    </div>
+  );
 };
 
 export default App;
